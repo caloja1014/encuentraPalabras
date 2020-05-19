@@ -34,7 +34,7 @@ public class Sesion {
                     String nombreCuenta = rs.getString("nombreCuenta");
                     int nivel =rs.getInt("nivel");
                     int puntaje=rs.getInt("puntaje");
-                    System.out.println(new Usuario(nombre,apellido,nombreCuenta,nivel,puntaje) );
+                    return new Usuario(nombre,apellido,nombreCuenta,nivel,puntaje) ;
                 }
                 else{
                     return null;

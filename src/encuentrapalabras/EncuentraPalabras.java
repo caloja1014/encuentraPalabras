@@ -44,7 +44,7 @@ public class EncuentraPalabras extends Application {
 
         Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
 
-        stage.setTitle("Hello World!");
+        stage.setTitle("Ecuentra Palabras");
         stage.setScene(scene);
         stage.show();
     }
