@@ -8,6 +8,9 @@ package encuentrapalabras;
 import interfaces.InterfazIdioma;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.sql.Connection;
+import java.util.Set;
+import java.util.TreeSet;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,19 +20,22 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import modelo.Idiomas;
 import modelo.LecturaIdioma;
+import providers.Conexion;
 
 /**
  *
  * @author CLOJA
  */
 public class EncuentraPalabras extends Application {
-    Toolkit t = Toolkit.getDefaultToolkit();
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-    final static Stage stage= new Stage();
-    
+    private final static Toolkit t = Toolkit.getDefaultToolkit();
+    public final static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public final static Set<String> idiomaJuego= new TreeSet<>();
+    public final static Stage stage= new Stage();
+    private final static Conexion conexion= new Conexion();
+    public final static Connection db= conexion.getConnection();
     @Override
     public void start(Stage primaryStage) {
+        
         InterfazIdioma i=new InterfazIdioma();
 
         

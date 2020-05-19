@@ -15,7 +15,7 @@ import java.util.TreeSet;
  */
 public class LecturaIdioma {
 
-    private Set idiomaSet = new TreeSet();
+    private final Set<String> idiomaSet = new TreeSet<>();
     private String idioma;
 
     public LecturaIdioma(String idioma) {
@@ -36,7 +36,7 @@ public class LecturaIdioma {
                 String linea;
                 while ((linea = br.readLine()) != null) {
                     if (!linea.equals("")) {
-                        idiomaSet.add(linea);
+                        idiomaSet.add(linea.toLowerCase());
                     }
                 }
             } catch (Exception e) {
@@ -56,14 +56,17 @@ public class LecturaIdioma {
             BufferedReader br = null;
 
             try {
-                archivo = new File("/idiomas/" + idioma + ".csv");
+                archivo = new File("src/idiomas/" + idioma + ".csv");
                 fr = new FileReader(archivo);
                 br = new BufferedReader(fr);
                 String linea;
                 while ((linea = br.readLine()) != null) {
                     String[] valores = linea.split(",");
+                    valores[0]=valores[0].replaceAll("\"|'|-", "");
+                    
+                    valores[0]=valores[0].trim();
                     if (!valores[0].equals("")) {
-                        idiomaSet.add(valores[0]);
+                        idiomaSet.add(valores[0].toLowerCase());
                     }
                 }
             } catch (IOException e) {
