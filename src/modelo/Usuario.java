@@ -19,26 +19,36 @@ public class Usuario {
     private String contrasena;
     private int nivel;
     private int puntaje;
-    private Image foto;
+    //private Image foto;
 
     public Usuario(
             String nombre,
             String apellido,
             String nombreCuenta,
-            String contrasena,
             int nivel,
-            int puntaje,
-            Image foto) {
+            int puntaje
+            ) {
         this.nombre = nombre;
         this.apellido=apellido;
-        this.contrasena=contrasena;
-        this.foto=foto;
         this.nivel=nivel;
         this.nombreCuenta=nombreCuenta;
         this.puntaje=puntaje;
         
     }
-
+    public Usuario(
+            String nombre,
+            String apellido,
+            String nombreCuenta,
+            String contrasena
+            ) {
+        this.contrasena=contrasena;
+        this.nombre = nombre;
+        this.apellido=apellido;
+        this.nivel=1;
+        this.nombreCuenta=nombreCuenta;
+        this.puntaje=0;
+        
+    }
     /**
      * @return the nombre
      */
@@ -108,19 +118,20 @@ public class Usuario {
     public void setPuntaje(int puntaje) {
         this.puntaje = puntaje;
     }
-
-    /**
-     * @return the foto
-     */
+/*
+   
     public Image getFoto() {
         return foto;
     }
 
-    /**
-     * @param foto the foto to set
-     */
+    
     public void setFoto(Image foto) {
         this.foto = foto;
+    }
+*/
+    @Override
+    public String toString() {
+        return "Usuario{" + "nombre=" + nombre + ", apellido=" + apellido + ", nombreCuenta=" + nombreCuenta + ", contrasena=" + contrasena + ", nivel=" + nivel + ", puntaje=" + puntaje + '}';
     }
     
 

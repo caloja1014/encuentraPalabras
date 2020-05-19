@@ -19,7 +19,7 @@ public class Conexion  {
 
     public Conexion() {
         Connection con = null;
-        String url = "jdbc:mysql://localhost:3306/usuarios";
+        String url = "jdbc:mysql://localhost:3306/Usuarios";
         String user= "root";
         String pass= "root";
         try {

@@ -9,6 +9,8 @@ import interfaces.InterfazIdioma;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Set;
 import java.util.TreeSet;
 import javafx.application.Application;
@@ -21,26 +23,27 @@ import javafx.stage.Stage;
 import modelo.Idiomas;
 import modelo.LecturaIdioma;
 import providers.Conexion;
+import providers.Sesion;
 
 /**
  *
  * @author CLOJA
  */
 public class EncuentraPalabras extends Application {
+
     private final static Toolkit t = Toolkit.getDefaultToolkit();
     public final static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    public final static Set<String> idiomaJuego= new TreeSet<>();
-    public final static Stage stage= new Stage();
-    private final static Conexion conexion= new Conexion();
-    public final static Connection db= conexion.getConnection();
+    public final static Set<String> idiomaJuego = new TreeSet<>();
+    public final static Stage stage = new Stage();
+    private final static Conexion conexion = new Conexion();
+    public final static Connection db = conexion.getConnection();
+
     @Override
     public void start(Stage primaryStage) {
-        
-        InterfazIdioma i=new InterfazIdioma();
+        InterfazIdioma i = new InterfazIdioma();
 
-        
-        Scene scene = new Scene(i.getRoot(), screenSize.width*0.7, screenSize.height*0.7);
-        
+        Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+
         stage.setTitle("Hello World!");
         stage.setScene(scene);
         stage.show();
@@ -50,8 +53,9 @@ public class EncuentraPalabras extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        launch(args);
         
+        launch(args);
+
     }
-    
+
 }
