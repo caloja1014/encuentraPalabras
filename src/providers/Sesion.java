@@ -59,4 +59,20 @@ public class Sesion {
         }
         return false;
     }
+    public boolean verificacionCuenta(String nombreCuenta){
+        try (Statement st = db.createStatement()) {
+            String query = "SELECT * FROM usuario where nombreCuenta=\""+nombreCuenta+"\";";
+            try (ResultSet rs = st.executeQuery(query)) {
+                return rs.next();
+                //System.out.println(rs.getArray("nombre"));
+            } catch (Exception e) {
+                System.out.println("error");
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println("Error al cargar los datos! " + e);
+            
+        }
+        return false;
+    }
 }

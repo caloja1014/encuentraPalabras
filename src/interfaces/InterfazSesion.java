@@ -89,14 +89,14 @@ public final class InterfazSesion {
         } else if (u == null) {
             validacion.setText("Usuario o Contraseña incorrectas");
         } else {
-            PaginaPrincipal i = new PaginaPrincipal();
+            PaginaPrincipal i = new PaginaPrincipal(u);
             Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
             EncuentraPalabras.stage.setScene(scene);
         }
     }
 
     private void mostrarRegistro() {
-        InterfazRegistro i = new InterfazRegistro();
+        InterfazRegistro i = new InterfazRegistro(sesion);
         Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
         EncuentraPalabras.stage.setScene(scene);
     }

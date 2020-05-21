@@ -5,13 +5,18 @@
  */
 package interfaces;
 
+import encuentrapalabras.EncuentraPalabras;
+import static encuentrapalabras.EncuentraPalabras.screenSize;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import modelo.Usuario;
+import providers.Sesion;
 
 /**
  *
@@ -38,9 +43,15 @@ public class InterfazRegistro {
     private HBox cajaContrasena;
     private HBox cajaRepetirContra;
 
-    private Button registrar;
+    private Label verificacionContra;
+    private Label verificacionCuenta;
+    private Label verificacionGeneral;
 
-    public InterfazRegistro() {
+    private Button registrar;
+    private final Sesion sesion;
+
+    public InterfazRegistro(Sesion sesion) {
+        this.sesion = sesion;
         inicializar();
         agregarAcciones();
         organizarElementos();
@@ -49,24 +60,28 @@ public class InterfazRegistro {
     private void organizarElementos() {
         cajaNombre.getChildren().addAll(nombreL, nombreT);
         cajaApellido.getChildren().addAll(apellidoL, apellidoT);
-        cajaCuenta.getChildren().addAll(nomCuentaL, nomCuentaT);
+        cajaCuenta.getChildren().addAll(nomCuentaL, nomCuentaT, verificacionCuenta);
         cajaContrasena.getChildren().addAll(contrasenaL, contrasenaT);
-        cajaRepetirContra.getChildren().addAll(repetirContrasenaL, repetirContrasenaT);
-        
+        cajaRepetirContra.getChildren().addAll(repetirContrasenaL, repetirContrasenaT, verificacionContra);
+
         cajaNombre.setAlignment(Pos.CENTER);
         cajaApellido.setAlignment(Pos.CENTER);
         cajaCuenta.setAlignment(Pos.CENTER);
         cajaContrasena.setAlignment(Pos.CENTER);
         cajaRepetirContra.setAlignment(Pos.CENTER);
-        
-        root.getChildren().addAll(cajaNombre, cajaApellido, cajaCuenta, cajaContrasena, cajaRepetirContra, registrar);
+
+        root.getChildren().addAll(cajaNombre, cajaApellido, cajaCuenta, cajaContrasena, cajaRepetirContra, verificacionGeneral, registrar);
         root.setAlignment(Pos.CENTER);
         root.setSpacing(8);
-        
+
     }
 
     private void inicializar() {
         root = new VBox();
+        verificacionCuenta = new Label();
+        verificacionContra = new Label();
+        verificacionGeneral = new Label();
+
         registrar = new Button("Registrar");
         nombreL = new Label("Nombres: ");
         apellidoL = new Label("Apellidos: ");
@@ -89,16 +104,45 @@ public class InterfazRegistro {
     }
 
     private void agregarAcciones() {
-        repetirContrasenaT.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("oldValue: " + oldValue);
-            System.out.println("newValue: " + newValue);
-            System.out.println("observable: " + observable);
-            System.out.println(contrasenaT.getText());
+        nomCuentaT.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (sesion.verificacionCuenta(newValue)) {
+                verificacionCuenta.setText("La cuenta ya existe, elija otro nombre");
+
+            } else {
+                verificacionCuenta.setText("");
+            }
         });
+        repetirContrasenaT.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.equals(contrasenaT.getText())) {
+                verificacionContra.setText("La contraseña no es igual");
+            } else {
+                verificacionContra.setText("");
+            }
+
+        });
+
+        registrar.setOnAction((value) -> registrarUsuario());
+    }
+
+    private void registrarUsuario() {
+        if (nombreT.getText().isEmpty()
+                || apellidoT.getText().isEmpty()
+                || nomCuentaT.getText().isEmpty()
+                || contrasenaT.getText().isEmpty()
+                || repetirContrasenaT.getText().isEmpty()) {
+            verificacionGeneral.setText("Algunos Campos estan Vacios");
+        } else {
+            verificacionGeneral.setText("");
+            Usuario usuario = new Usuario(nombreT.getText(), apellidoT.getText(), nomCuentaT.getText(), 1, 0);
+            sesion.createUser(nombreT.getText(), apellidoT.getText(), nomCuentaT.getText(), contrasenaT.getText());
+            PaginaPrincipal i = new PaginaPrincipal(usuario);
+            Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+            EncuentraPalabras.stage.setScene(scene);
+        }
     }
 
     public VBox getRoot() {
         return root;
     }
-    
+
 }
