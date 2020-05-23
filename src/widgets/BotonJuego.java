@@ -12,16 +12,18 @@ import javafx.scene.control.Button;
  * @author CLOJA
  */
 public class BotonJuego {
+
     private double tamanio;
     private double pos_x;
     private double pos_y;
     private String dato;
     private boolean esPeligroso;
     private boolean esBonus;
-    
+    private int fila;
+    private int columna;
     private Button boton;
-    
-    public BotonJuego(double tamanio, double pos_x, double pos_y, String dato) {
+    private boolean esEscogido;
+    public BotonJuego(double tamanio, double pos_x, double pos_y, String dato,int fila,int columna) {
         this.tamanio = tamanio;
         this.pos_x = pos_x;
         this.pos_y = pos_y;
@@ -31,6 +33,9 @@ public class BotonJuego {
         boton = new Button(dato);
         boton.setMaxSize(tamanio, tamanio);
         boton.setPrefSize(tamanio, tamanio);
+        this.fila=fila;
+        this.columna=columna;
+        this.esEscogido=false;
     }
 
     public double getPos_x() {
@@ -74,8 +79,39 @@ public class BotonJuego {
     }
 
     public Button getBoton() {
+        boton.setPrefSize(tamanio, tamanio);
+        boton.setTranslateX(pos_x);
+        boton.setTranslateY(pos_y);
         return boton;
     }
-    
-    
+
+    public boolean isEsEscogido() {
+        return esEscogido;
+    }
+
+    public void setEsEscogido(boolean esEscogido) {
+        this.esEscogido = esEscogido;
+    }
+
+    public int getFila() {
+        return fila;
+    }
+
+    public void setFila(int fila) {
+        this.fila = fila;
+    }
+
+    public int getColumna() {
+        return columna;
+    }
+
+    public void setColumna(int columna) {
+        this.columna = columna;
+    }
+
+    @Override
+    public String toString() {
+        return "BotonJuego{" + "dato=" + dato + ", fila=" + fila + ", columna=" + columna + '}';
+    }
+
 }

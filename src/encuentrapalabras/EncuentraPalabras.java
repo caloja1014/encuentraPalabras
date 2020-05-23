@@ -17,13 +17,8 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import modelo.Idiomas;
-import modelo.LecturaIdioma;
 import providers.Conexion;
-import providers.Sesion;
 
 /**
  *
@@ -37,9 +32,13 @@ public class EncuentraPalabras extends Application {
     public final static Stage stage = new Stage();
     private final static Conexion conexion = new Conexion();
     public final static Connection db = conexion.getConnection();
-
+    public final static TreeSet<String>diccionarioPrueba= new TreeSet<>();
     @Override
     public void start(Stage primaryStage) {
+        stage.setMaxHeight(screenSize.height * 0.7);
+        stage.setMaxWidth(screenSize.width * 0.7);
+        stage.setMinHeight(screenSize.height * 0.7);
+        stage.setMinWidth(screenSize.width * 0.7);
         InterfazIdioma i = new InterfazIdioma();
 
         Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);

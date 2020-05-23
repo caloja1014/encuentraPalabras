@@ -29,7 +29,7 @@ public class PaginaPrincipal {
         root.getChildren().add(jugar);
         root.setAlignment(Pos.CENTER);
         jugar.setOnAction((val)->{
-            InterfazJuego i = new InterfazJuego(usuario);
+            InterfazJuego i = new InterfazJuego(usuario,5);
             Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
             EncuentraPalabras.stage.setScene(scene);
         });
