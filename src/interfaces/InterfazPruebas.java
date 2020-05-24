@@ -38,15 +38,6 @@ public class InterfazPruebas extends Application {
     }
 
     public static void main(String[] args) {
-        Integer[][] i = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-        i[0][0]=null;
-        System.out.println(Arrays.toString(i[0]));
-        PriorityQueue<Integer> l = new PriorityQueue<>((Integer o1, Integer o2) -> o2 - o1);
-        l.offer(5);
-        l.offer(6);
-        l.clear();
-        System.out.println(l);
-        
         launch(args);
         
     }

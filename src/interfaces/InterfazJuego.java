@@ -26,6 +26,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import modelo.Usuario;
 import widgets.BotonJuego;
+import java.util.ArrayList;
+import providers.Posicion;
 
 /**
  *
@@ -48,12 +50,15 @@ public class InterfazJuego {
 
     private BotonJuego[][] botones;
     private TreeMap<Integer, PriorityQueue<BotonJuego>> eliminados;
-
+    private final ArrayList<BotonJuego> botonesEliminados;
+    private ArrayList<Posicion> movimientosPermitidos;
     private Queue<Temporizador> hilos;
     private final int cantidad;
     private final Double particion;
 
     public InterfazJuego(Usuario usu, int cantidad) {
+        botonesEliminados = new ArrayList<>();
+        movimientosPermitidos = new ArrayList<>();
         particion = (screenSize.height * 0.7) / cantidad;
         EncuentraPalabras.diccionarioPrueba.add("ssss");
         this.usu = usu;
@@ -86,9 +91,10 @@ public class InterfazJuego {
     private void listenerPalabra(String newValue) {
         final boolean contienePala = EncuentraPalabras.diccionarioPrueba.contains(newValue);
         if (contienePala) {
-            System.out.println(eliminados.keySet());
             palabra.setText("");
             palabraEscogida.delete(0, palabraEscogida.length());
+            movimientosPermitidos.clear();
+            botonesEliminados.clear();
             EncuentraPalabras.diccionarioPrueba.remove(newValue);
             for (PriorityQueue<BotonJuego> p : eliminados.values()) {
                 BotonJuego botonJ = p.poll();
@@ -106,24 +112,27 @@ public class InterfazJuego {
         Set<Integer> columnas = eliminados.keySet();
         for (Integer j : columnas) {
             int contador = 0;
-            for (int i = 4; i >= 0; --i) {
+            for (int i = 4; i >= 0; i--) {
                 BotonJuego b = botones[i][j];
                 if (b == null) {
                     contador++;
                 } else {
-                    b.moverBoton(contador);
-                    i = i + contador;
-                    contador = 0;
+                    if (contador != 0) {
+                        botones[i][j] = null;
+                        b.moverBoton(contador);
+                        i = i + contador;
+                        contador = 0;
+                    }
                 }
             }
             if (contador > 0) {
                 for (int i = 0; i < contador; i++) {
-                    BotonJuego bo = new BotonJuego(particion, particion * j, -particion * (i + 1), ""+i, -1 - i, j);
-                    botones[contador-1-i][j]=bo;
+                    BotonJuego bo = new BotonJuego(particion, particion * j, -particion * (i + 1), "" + i, -1 - i, j);
+                    bo.getBoton().setOnAction((v) -> validarOpcionesPermitidas(bo));
+                    bo.getBoton().setFocusTraversable(false);
+                    botones[contador - 1 - i][j] = bo;
                     paneJuego.getChildren().add(bo.getBoton());
-
-                    bo.moverBoton(2);
-                    
+                    bo.moverBoton(contador);
                 }
 
             }
@@ -151,8 +160,9 @@ public class InterfazJuego {
         for (int i = 0; i < cantidad; i++) {
             for (int j = 0; j < cantidad; j++) {
                 BotonJuego b = new BotonJuego(particion, particion * i, particion * j, "s", j, i);
+                b.getBoton().setFocusTraversable(false);
                 paneJuego.getChildren().addAll(b.getBoton());
-                b.getBoton().setOnAction((v) -> seleccionarBoton(b));
+                b.getBoton().setOnAction((v) -> validarOpcionesPermitidas(b));
 
                 botones[j][i] = b;
             }
@@ -160,11 +170,30 @@ public class InterfazJuego {
 
     }
 
+    private void validarOpcionesPermitidas(BotonJuego b) {
+        if (movimientosPermitidos.isEmpty() && !botonesEliminados.contains(b)) {
+            movimientosPermitidos = b.getPosicion().getAdyacentes();
+            seleccionarBoton(b);
+        } else {
+            if (movimientosPermitidos.contains(b.getPosicion()) && !botonesEliminados.contains(b)) {
+                movimientosPermitidos = b.getPosicion().getAdyacentes();
+                seleccionarBoton(b);
+
+            } else {
+                palabra.setText("");
+                palabraEscogida.delete(0, palabraEscogida.length());
+                movimientosPermitidos.clear();
+                botonesEliminados.clear();
+            }
+        }
+    }
+
     public HBox getRoot() {
         return root;
     }
 
     private void seleccionarBoton(BotonJuego b) {
+        botonesEliminados.add(b);
         Temporizador t = hilos.poll();
         if (t != null) {
             t.detenerHilo();
@@ -177,7 +206,7 @@ public class InterfazJuego {
         }
         palabraEscogida.append(b.getDato());
         palabra.setText(palabraEscogida.toString());
-        Temporizador tmp = new Temporizador(palabra, palabraEscogida);
+        Temporizador tmp = new Temporizador(palabra, palabraEscogida, botonesEliminados, movimientosPermitidos);
         tmp.start();
         hilos.offer(tmp);
     }
@@ -189,10 +218,14 @@ final class Temporizador extends Thread {
     private final Label palabra;
     private final StringBuilder palabraEscogida;
     private volatile boolean detener;
+    private final ArrayList<BotonJuego> botonesEliminados;
+    private final ArrayList<Posicion> movimientosPermitidos;
 
-    public Temporizador(Label palabra, StringBuilder palabraEscogida) {
+    public Temporizador(Label palabra, StringBuilder palabraEscogida, ArrayList<BotonJuego> botonesEliminados, ArrayList<Posicion> movimientosPermitidos) {
         this.palabra = palabra;
         this.palabraEscogida = palabraEscogida;
+        this.botonesEliminados = botonesEliminados;
+        this.movimientosPermitidos = movimientosPermitidos;
     }
 
     @Override
@@ -208,6 +241,8 @@ final class Temporizador extends Thread {
             if (!detener) {
                 palabraEscogida.delete(0, palabraEscogida.length());
                 palabra.setText("");
+                movimientosPermitidos.clear();
+                botonesEliminados.clear();
             }
         });
 

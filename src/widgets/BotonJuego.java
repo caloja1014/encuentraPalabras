@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
+import providers.Posicion;
 
 /**
  *
@@ -22,8 +23,7 @@ public class BotonJuego {
     private String dato;
     private boolean esPeligroso;
     private boolean esBonus;
-    private int fila;
-    private int columna;
+    private Posicion posicion;
     private final Button boton;
     private boolean esEscogido;
 
@@ -37,14 +37,13 @@ public class BotonJuego {
         boton = new Button(dato);
         boton.setMaxSize(tamanio, tamanio);
         boton.setPrefSize(tamanio, tamanio);
-        this.fila = fila;
-        this.columna = columna;
+        this.posicion= new Posicion(fila,columna);
         this.esEscogido = false;
     }
 
     public void moverBoton(int noLugares) {
         double posFinal = (noLugares * tamanio) + pos_y;
-        fila += noLugares;
+        posicion.setFila(posicion.getFila()+noLugares);
         new Thread(() -> {
             while (pos_y < posFinal) {
                 Platform.runLater(() -> {
@@ -120,24 +119,20 @@ public class BotonJuego {
     }
 
     public int getFila() {
-        return fila;
-    }
-
-    public void setFila(int fila) {
-        this.fila = fila;
+        return posicion.getFila();
     }
 
     public int getColumna() {
-        return columna;
+        return posicion.getColumna();
     }
 
-    public void setColumna(int columna) {
-        this.columna = columna;
+    public Posicion getPosicion() {
+        return posicion;
     }
-
+    
     @Override
     public String toString() {
-        return "BotonJuego{" + "dato=" + dato + ", fila=" + fila + ", columna=" + columna + '}';
+        return "BotonJuego{" + "dato=" + dato + ", fila=" + posicion.getFila() + ", columna=" + posicion.getColumna() + '}';
     }
 
 }
