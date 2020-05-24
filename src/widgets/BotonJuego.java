@@ -23,7 +23,7 @@ public class BotonJuego {
     private String dato;
     private boolean esPeligroso;
     private boolean esBonus;
-    private Posicion posicion;
+    private final Posicion posicion;
     private final Button boton;
     private boolean esEscogido;
 
@@ -130,9 +130,13 @@ public class BotonJuego {
         return posicion;
     }
     
-    @Override
+   /* @Override
     public String toString() {
         return "BotonJuego{" + "dato=" + dato + ", fila=" + posicion.getFila() + ", columna=" + posicion.getColumna() + '}';
+    }*/
+@Override
+    public String toString() {
+        return dato ;
     }
 
 }
