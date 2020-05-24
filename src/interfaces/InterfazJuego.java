@@ -7,23 +7,23 @@ package interfaces;
 
 import encuentrapalabras.EncuentraPalabras;
 import static encuentrapalabras.EncuentraPalabras.screenSize;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import modelo.Usuario;
 import widgets.BotonJuego;
 
@@ -50,9 +50,11 @@ public class InterfazJuego {
     private TreeMap<Integer, PriorityQueue<BotonJuego>> eliminados;
 
     private Queue<Temporizador> hilos;
-    private int cantidad;
+    private final int cantidad;
+    private final Double particion;
 
     public InterfazJuego(Usuario usu, int cantidad) {
+        particion = (screenSize.height * 0.7) / cantidad;
         EncuentraPalabras.diccionarioPrueba.add("ssss");
         this.usu = usu;
         this.cantidad = cantidad;
@@ -68,32 +70,64 @@ public class InterfazJuego {
         paneJuego.setPrefSize(screenSize.height * 0.7, screenSize.height * 0.7);
         paneJuego.setMinSize(screenSize.height * 0.3, screenSize.height * 0.3);
 
-        Double particion = (screenSize.height * 0.7) / 5;
         crearYAgregarAcciones(particion, cantidad);
         informacion.getChildren().addAll(nivel, puntajePartida, imagenUsu, palabra, puntajeRecolectado);
         root.getChildren().addAll(paneJuego, informacion);
     }
 
     private void agregarAcciones() {
+        PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
         palabra.textProperty().addListener((ObservableValue<? extends String> ob, String oldValue, String newValue) -> {
-            final boolean contienePala=EncuentraPalabras.diccionarioPrueba.contains(newValue);
-            
-            if(contienePala){
-                System.out.println(eliminados.keySet());
-                palabra.setText("");
-                palabraEscogida.delete(0, palabraEscogida.length());
-                EncuentraPalabras.diccionarioPrueba.remove(newValue);
-                for (PriorityQueue<BotonJuego> p:eliminados.values()){
-                    BotonJuego botonJ=p.poll();
-                    
-                    while(botonJ!=null){
-                        paneJuego.getChildren().remove(botonJ.getBoton());
-                        botones[botonJ.getFila()][botonJ.getColumna()]=null;
-                        botonJ=p.poll();
-                    }
+            pause.setOnFinished(value -> listenerPalabra(newValue));
+            pause.playFromStart();
+        });
+    }
+
+    private void listenerPalabra(String newValue) {
+        final boolean contienePala = EncuentraPalabras.diccionarioPrueba.contains(newValue);
+        if (contienePala) {
+            System.out.println(eliminados.keySet());
+            palabra.setText("");
+            palabraEscogida.delete(0, palabraEscogida.length());
+            EncuentraPalabras.diccionarioPrueba.remove(newValue);
+            for (PriorityQueue<BotonJuego> p : eliminados.values()) {
+                BotonJuego botonJ = p.poll();
+                while (botonJ != null) {
+                    paneJuego.getChildren().remove(botonJ.getBoton());
+                    botones[botonJ.getFila()][botonJ.getColumna()] = null;
+                    botonJ = p.poll();
                 }
             }
-        });
+            moverBotones();
+        }
+    }
+
+    private void moverBotones() {
+        Set<Integer> columnas = eliminados.keySet();
+        for (Integer j : columnas) {
+            int contador = 0;
+            for (int i = 4; i >= 0; --i) {
+                BotonJuego b = botones[i][j];
+                if (b == null) {
+                    contador++;
+                } else {
+                    b.moverBoton(contador);
+                    i = i + contador;
+                    contador = 0;
+                }
+            }
+            if (contador > 0) {
+                for (int i = 0; i < contador; i++) {
+                    BotonJuego bo = new BotonJuego(particion, particion * j, -particion * (i + 1), ""+i, -1 - i, j);
+                    botones[contador-1-i][j]=bo;
+                    paneJuego.getChildren().add(bo.getBoton());
+
+                    bo.moverBoton(2);
+                    
+                }
+
+            }
+        }
     }
     private final Comparator<BotonJuego> comparador = (BotonJuego o1, BotonJuego o2) -> o1.getFila() - o2.getFila();
 
@@ -119,6 +153,7 @@ public class InterfazJuego {
                 BotonJuego b = new BotonJuego(particion, particion * i, particion * j, "s", j, i);
                 paneJuego.getChildren().addAll(b.getBoton());
                 b.getBoton().setOnAction((v) -> seleccionarBoton(b));
+
                 botones[j][i] = b;
             }
         }
@@ -134,10 +169,10 @@ public class InterfazJuego {
         if (t != null) {
             t.detenerHilo();
         }
-        if(eliminados.containsKey(b.getColumna())){
+        if (eliminados.containsKey(b.getColumna())) {
             eliminados.get(b.getColumna()).offer(b);
-        }else{
-            eliminados.put(b.getColumna(),new PriorityQueue<>(comparador) );
+        } else {
+            eliminados.put(b.getColumna(), new PriorityQueue<>(comparador));
             eliminados.get(b.getColumna()).offer(b);
         }
         palabraEscogida.append(b.getDato());

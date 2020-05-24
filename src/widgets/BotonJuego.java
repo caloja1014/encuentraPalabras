@@ -5,6 +5,9 @@
  */
 package widgets;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 
 /**
@@ -13,17 +16,18 @@ import javafx.scene.control.Button;
  */
 public class BotonJuego {
 
-    private double tamanio;
+    private final double tamanio;
     private double pos_x;
-    private double pos_y;
+    private volatile double pos_y;
     private String dato;
     private boolean esPeligroso;
     private boolean esBonus;
     private int fila;
     private int columna;
-    private Button boton;
+    private final Button boton;
     private boolean esEscogido;
-    public BotonJuego(double tamanio, double pos_x, double pos_y, String dato,int fila,int columna) {
+
+    public BotonJuego(double tamanio, double pos_x, double pos_y, String dato, int fila, int columna) {
         this.tamanio = tamanio;
         this.pos_x = pos_x;
         this.pos_y = pos_y;
@@ -33,9 +37,31 @@ public class BotonJuego {
         boton = new Button(dato);
         boton.setMaxSize(tamanio, tamanio);
         boton.setPrefSize(tamanio, tamanio);
-        this.fila=fila;
-        this.columna=columna;
-        this.esEscogido=false;
+        this.fila = fila;
+        this.columna = columna;
+        this.esEscogido = false;
+    }
+
+    public void moverBoton(int noLugares) {
+        double posFinal = (noLugares * tamanio) + pos_y;
+        fila += noLugares;
+        new Thread(() -> {
+            while (pos_y < posFinal) {
+                Platform.runLater(() -> {
+                    double posActual = boton.getTranslateY();
+                    double resto= posFinal-pos_y;
+                    double resultado=resto>1?posActual + 1:posActual + resto;
+                    pos_y = resultado;
+                    boton.setTranslateY(pos_y);
+                });
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(BotonJuego.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+        }).start();
     }
 
     public double getPos_x() {
