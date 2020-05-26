@@ -5,8 +5,10 @@
  */
 package interfaces;
 
+import java.util.Random;
 import encuentrapalabras.EncuentraPalabras;
 import static encuentrapalabras.EncuentraPalabras.screenSize;
+import static encuentrapalabras.EncuentraPalabras.stage;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
@@ -29,10 +31,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.shape.Circle;
 import providers.Posicion;
 import javafx.scene.paint.Color;
+import javafx.stage.Window;
+import modelo.LecturaIdioma;
 
 /**
  *
@@ -49,26 +58,31 @@ public class InterfazJuego {
     private ImageView imagenUsu;
     private Label palabra;
     private Label puntajeRecolectado;
-
+    private int puntajeActual;
     private StringBuilder palabraEscogida;
     private final Usuario usu;
-
+    private int puntajeDePartida;
     private BotonJuego[][] botones;
     private TreeMap<Integer, LinkedList<BotonJuego>> eliminados;
     private final ArrayList<BotonJuego> botonesEliminados;
     private ArrayList<Posicion> movimientosPermitidos;
     private Queue<Temporizador> hilos;
-    private int cantidad;
-    private Double particion;
+    private final int cantidad;
+    private final Double particion;
     private volatile List<String> letras;
     private final LetrasObtener obtenerLetras;
+    private BotonesPeligrosos selecBotonesPeligrosos;
+    private final String idioma;
 
-    public InterfazJuego(Usuario usu) {
+    public InterfazJuego(Usuario usu, String idioma) {
+        this.idioma = idioma;
+
+        puntajeActual = 0;
         this.usu = usu;
         cantidad = obtenerCantidad();
         particion = (screenSize.height * 0.7) / cantidad;
         letras = new LinkedList<>();
-        obtenerLetras = new LetrasObtener(letras,(int) cantidad*cantidad);
+        obtenerLetras = new LetrasObtener(letras, (int) cantidad * cantidad);
         obtenerLetras.start();
         botonesEliminados = new ArrayList<>();
         movimientosPermitidos = new ArrayList<>();
@@ -98,10 +112,11 @@ public class InterfazJuego {
         informacion = new VBox();
 
         nivel = new Label("Nivel " + usu.getNivel());
-        puntajePartida = new Label(String.valueOf(usu.getNivel() * 20 + 100));
+        puntajeDePartida = (usu.getNivel() * 20) + 100;
+        puntajePartida = new Label(String.valueOf(puntajeDePartida));
         imagenUsu = new ImageView();
         palabra = new Label();
-        puntajeRecolectado = new Label("0");
+        puntajeRecolectado = new Label(String.valueOf(puntajeActual));
     }
 
     /**
@@ -149,11 +164,45 @@ public class InterfazJuego {
                     botones[botonJ.getFila()][botonJ.getColumna()] = null;
                 });
             });
+            avanzarNivel(newValue);
             moverBotones();
             movimientosPermitidos.clear();
             botonesEliminados.clear();
         }
 
+    }
+
+    private void avanzarNivel(String newValue) {
+        int puntaje = newValue.length() * 40;
+        puntajeActual += puntaje;
+
+        if (puntajeActual > puntajeDePartida) {
+            usu.actualizarUsuario(usu.getNivel() + 1, usu.getPuntaje() + puntaje);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "", ButtonType.YES, ButtonType.NO);
+            alert.setHeaderText("¿Quieres avanzar al siguiente nivel?");
+            alert.setGraphic(null);
+            // clicking X also means no
+            Platform.runLater(() -> {
+                ButtonType result = alert.showAndWait().orElse(ButtonType.NO);
+
+                if (ButtonType.NO.equals(result)) {
+                    PaginaPrincipal i = new PaginaPrincipal(usu, idioma);
+                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+                    EncuentraPalabras.stage.setScene(scene);
+                } else {
+                    InterfazJuego i = new InterfazJuego(usu, idioma);
+                    LecturaIdioma l = new LecturaIdioma(idioma);
+                    EncuentraPalabras.idiomaJuego.clear();
+                    EncuentraPalabras.idiomaJuego.addAll(l.getIdiomaSet());
+                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+
+                    EncuentraPalabras.stage.setScene(scene);
+                }
+            });
+        }
+        Platform.runLater(() -> {
+            puntajeRecolectado.setText(String.valueOf(puntajeActual));
+        });
     }
 
     /**
@@ -240,7 +289,14 @@ public class InterfazJuego {
                 botones[j][i] = b;
             }
         }
-
+        int iteraciones = (usu.getNivel() / 5) + 1;
+        /**
+         * Inicio de los hilos que seleccionaran las letras peligrosas
+         */
+        for (int i = 0; i < iteraciones; i++) {
+            selecBotonesPeligrosos = new BotonesPeligrosos(botones, usu.getNivel());
+            selecBotonesPeligrosos.start();
+        }
     }
 
     /**
@@ -249,6 +305,7 @@ public class InterfazJuego {
      * @param b Boton Esogido en la pantalla
      */
     private void validarOpcionesPermitidas(BotonJuego b) {
+        validarBotonPeligroso(b);
         if (movimientosPermitidos.isEmpty() && !botonesEliminados.contains(b)) {
             movimientosPermitidos = b.getPosicion().getAdyacentes();
             seleccionarBoton(b);
@@ -260,9 +317,45 @@ public class InterfazJuego {
             } else {
                 palabra.setText("");
                 palabraEscogida.delete(0, palabraEscogida.length());
+                botonesEliminados.forEach((p) -> {
+                    p.setEsEscogido(false);
+                });
                 movimientosPermitidos.clear();
                 botonesEliminados.clear();
                 eliminados.clear();
+            }
+        }
+    }
+
+    private void validarBotonPeligroso(BotonJuego b) {
+        if (b.isEsPeligroso()) {
+            int puntajeRestado = 10;
+
+            puntajeActual -= puntajeRestado;
+            if (puntajeActual < 0) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "", ButtonType.YES, ButtonType.NO);
+                alert.setHeaderText("¿Quieres volver a jugar?");
+                alert.setGraphic(null);
+                // clicking X also means no
+                ButtonType result = alert.showAndWait().orElse(ButtonType.NO);
+
+                if (ButtonType.NO.equals(result)) {
+                    PaginaPrincipal i = new PaginaPrincipal(usu, idioma);
+                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+                    EncuentraPalabras.stage.setScene(scene);
+                } else {
+                    InterfazJuego i = new InterfazJuego(usu, idioma);
+                    LecturaIdioma l = new LecturaIdioma(idioma);
+                    EncuentraPalabras.idiomaJuego.clear();
+                    EncuentraPalabras.idiomaJuego.addAll(l.getIdiomaSet());
+                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+
+                    EncuentraPalabras.stage.setScene(scene);
+                }
+            } else {
+                Platform.runLater(() -> {
+                    puntajeRecolectado.setText(String.valueOf(puntajeActual));
+                });
             }
         }
     }
@@ -273,6 +366,7 @@ public class InterfazJuego {
      * @param b
      */
     private void seleccionarBoton(BotonJuego b) {
+        b.setEsEscogido(true);
         botonesEliminados.add(b);
         Temporizador t = hilos.poll();
         if (t != null) {
@@ -286,6 +380,10 @@ public class InterfazJuego {
         }
         palabraEscogida.append(b.getDato());
         palabra.setText(palabraEscogida.toString());
+        /**
+         * Inicio del hilo que permite que no se borren las palabras escogidas
+         * al instante que se seleccionan
+         */
         Temporizador tmp = new Temporizador(palabra, palabraEscogida, botonesEliminados, movimientosPermitidos, eliminados);
         tmp.start();
         hilos.offer(tmp);
@@ -295,12 +393,18 @@ public class InterfazJuego {
         return root;
     }
 
+    /**
+     * Metodo para determinar la cantidad de bloques que habran en la pantalla
+     *
+     * @return Cantidad de bloques
+     */
     private int obtenerCantidad() {
         int valorDefault = 5;
         int cantidadAdicional = usu.getNivel() / 5;
         return valorDefault + cantidadAdicional;
 
     }
+
 }
 
 /**
@@ -340,6 +444,9 @@ final class Temporizador extends Thread {
                 palabraEscogida.delete(0, palabraEscogida.length());
                 palabra.setText("");
                 movimientosPermitidos.clear();
+                botonesEliminados.forEach((p) -> {
+                    p.setEsEscogido(false);
+                });
                 botonesEliminados.clear();
                 eliminados.clear();
             }
@@ -360,9 +467,10 @@ final class LetrasObtener {
 
     private volatile List<String> letras;
     private volatile int cantidad;
-    public LetrasObtener(List letras,int cantidad) {
+
+    public LetrasObtener(List letras, int cantidad) {
         this.letras = letras;
-        this.cantidad=cantidad;
+        this.cantidad = cantidad;
     }
 
     public void start() {
@@ -371,7 +479,52 @@ final class LetrasObtener {
             String[] palabra;
             palabra = i.next().split("");
             List<String> asList = Arrays.asList(palabra);
-            asList.forEach((p)->letras.add(p.toUpperCase()));
+            asList.forEach((p) -> letras.add(p.toUpperCase()));
+
+        }
+    }
+}
+
+final class BotonesPeligrosos extends Thread {
+
+    private final BotonJuego[][] botones;
+    private final Random rd;
+    private final int longitud;
+    private final int nivel;
+    private final int TIEMPO = 8;
+
+    public BotonesPeligrosos(BotonJuego[][] botones, int nivel) {
+        this.botones = botones;
+        rd = new Random();
+        longitud = botones.length;
+        this.nivel = nivel;
+        System.out.println(longitud);
+    }
+
+    @Override
+    public void run() {
+        while (stage.isShowing()) {
+            int num1 = rd.nextInt(longitud);
+            int num2 = rd.nextInt(longitud);
+            BotonJuego b = botones[num1][num2];
+            Platform.runLater(() -> {
+
+                b.getBoton().setText("Peligroso");
+                b.setEsPeligroso(true);
+
+            });
+
+            try {
+                Thread.sleep((9 - nivel) * 1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(BotonesPeligrosos.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Platform.runLater(() -> {
+
+                b.getBoton().setText(b.getDato());
+                b.setEsPeligroso(false);
+
+            });
         }
     }
 }

@@ -40,8 +40,9 @@ public final class InterfazSesion {
     private VBox credenciales;
     private Sesion sesion;
     private Label validacion;
-
-    public InterfazSesion() {
+    private String idioma;
+    public InterfazSesion(String idioma) {
+        this.idioma=idioma;
         inicializarVariables();
         agregarAcciones();
         organizarElementos();
@@ -89,14 +90,14 @@ public final class InterfazSesion {
         } else if (u == null) {
             validacion.setText("Usuario o Contraseña incorrectas");
         } else {
-            PaginaPrincipal i = new PaginaPrincipal(u);
+            PaginaPrincipal i = new PaginaPrincipal(u,idioma);
             Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
             EncuentraPalabras.stage.setScene(scene);
         }
     }
 
     private void mostrarRegistro() {
-        InterfazRegistro i = new InterfazRegistro(sesion);
+        InterfazRegistro i = new InterfazRegistro(sesion,idioma);
         Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
         EncuentraPalabras.stage.setScene(scene);
     }

@@ -22,16 +22,18 @@ import modelo.Usuario;
 public class PaginaPrincipal {
     private VBox root;
     private Button jugar;
-    Usuario usuario;
-   
-    public PaginaPrincipal(Usuario usuario){
+    private Usuario usuario;
+   private String idioma;
+    public PaginaPrincipal(Usuario usuario,String idioma){
         this.usuario=usuario;
+        this.idioma=idioma;
         root= new VBox();
         jugar=new Button("Jugar");
         root.getChildren().add(jugar);
         root.setAlignment(Pos.CENTER);
+       
         jugar.setOnAction((val)->{
-            InterfazJuego i = new InterfazJuego(usuario);
+            InterfazJuego i = new InterfazJuego(usuario,idioma);
             Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
            
             EncuentraPalabras.stage.setScene(scene);

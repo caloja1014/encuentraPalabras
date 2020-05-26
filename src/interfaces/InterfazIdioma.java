@@ -24,7 +24,6 @@ public class InterfazIdioma {
 
     private final VBox root = new VBox();
     private final Label titulo = new Label("Escoge el Idioma");
-
     public InterfazIdioma() {
         organizarElementos();
     }
@@ -51,7 +50,7 @@ public class InterfazIdioma {
         LecturaIdioma l= new LecturaIdioma(idioma);
         EncuentraPalabras.idiomaJuego.clear();
         EncuentraPalabras.idiomaJuego.addAll(l.getIdiomaSet());
-        InterfazSesion i = new InterfazSesion();
+        InterfazSesion i = new InterfazSesion(idioma);
         Scene scene = new Scene(i.getRoot(), screenSize.width*0.7, screenSize.height*0.7);
         EncuentraPalabras.stage.setScene(scene);
     }

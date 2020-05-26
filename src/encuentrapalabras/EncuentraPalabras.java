@@ -12,8 +12,10 @@ import java.sql.Connection;
 import java.util.Set;
 import java.util.TreeSet;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import providers.Conexion;
 
 /**
@@ -28,9 +30,11 @@ public class EncuentraPalabras extends Application {
     public final static Stage stage = new Stage();
     private final static Conexion conexion = new Conexion();
     public final static Connection db = conexion.getConnection();
-    public final static TreeSet<String>diccionarioPrueba= new TreeSet<>();
+    public final static TreeSet<String> diccionarioPrueba = new TreeSet<>();
+    
     @Override
     public void start(Stage primaryStage) {
+        
         stage.setMaxHeight(screenSize.height * 0.7);
         stage.setMaxWidth(screenSize.width * 0.7);
         stage.setMinHeight(screenSize.height * 0.7);
@@ -42,13 +46,14 @@ public class EncuentraPalabras extends Application {
         stage.setTitle("Ecuentra Palabras");
         stage.setScene(scene);
         stage.show();
+        
     }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+
         launch(args);
 
     }

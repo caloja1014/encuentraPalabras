@@ -49,9 +49,10 @@ public class InterfazRegistro {
 
     private Button registrar;
     private final Sesion sesion;
-
-    public InterfazRegistro(Sesion sesion) {
+    private final String idioma;
+    public InterfazRegistro(Sesion sesion,String idioma) {
         this.sesion = sesion;
+        this.idioma=idioma;
         inicializar();
         agregarAcciones();
         organizarElementos();
@@ -135,7 +136,7 @@ public class InterfazRegistro {
             verificacionGeneral.setText("");
             Usuario usuario = new Usuario(nombreT.getText(), apellidoT.getText(), nomCuentaT.getText(), 1, 0);
             sesion.createUser(nombreT.getText(), apellidoT.getText(), nomCuentaT.getText(), contrasenaT.getText());
-            PaginaPrincipal i = new PaginaPrincipal(usuario);
+            PaginaPrincipal i = new PaginaPrincipal(usuario,idioma);
             Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
             EncuentraPalabras.stage.setScene(scene);
         }
