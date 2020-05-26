@@ -36,7 +36,7 @@ public class LecturaIdioma {
                 String linea;
                 while ((linea = br.readLine()) != null) {
                     if (!linea.equals("")) {
-                        idiomaSet.add(linea.toLowerCase());
+                        idiomaSet.add(linea.toUpperCase());
                     }
                 }
             } catch (Exception e) {
@@ -66,7 +66,7 @@ public class LecturaIdioma {
                     
                     valores[0]=valores[0].trim();
                     if (!valores[0].equals("")) {
-                        idiomaSet.add(valores[0].toLowerCase());
+                        idiomaSet.add(valores[0].toUpperCase());
                     }
                 }
             } catch (IOException e) {

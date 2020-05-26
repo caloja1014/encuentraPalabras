@@ -9,7 +9,6 @@ import interfaces.InterfazIdioma;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.Set;
 import java.util.TreeSet;
 import javafx.application.Application;

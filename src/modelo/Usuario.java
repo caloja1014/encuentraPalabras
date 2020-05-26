@@ -20,7 +20,6 @@ public class Usuario {
     private int nivel;
     private int puntaje;
     //private Image foto;
-
     public Usuario(
             String nombre,
             String apellido,
@@ -129,6 +128,7 @@ public class Usuario {
         this.foto = foto;
     }
 */
+    
     @Override
     public String toString() {
         return "Usuario{" + "nombre=" + nombre + ", apellido=" + apellido + ", nombreCuenta=" + nombreCuenta + ", contrasena=" + contrasena + ", nivel=" + nivel + ", puntaje=" + puntaje + '}';
