@@ -24,7 +24,7 @@ import providers.Sesion;
  */
 public class InterfazRegistro {
 
-    private VBox root;
+    private HBox root;
     private Label nombreL;
     private Label apellidoL;
     private Label nomCuentaL;
@@ -36,12 +36,9 @@ public class InterfazRegistro {
     private TextField nomCuentaT;
     private PasswordField contrasenaT;
     private PasswordField repetirContrasenaT;
+    private VBox labels;
+    private VBox textfields;
 
-    private HBox cajaNombre;
-    private HBox cajaApellido;
-    private HBox cajaCuenta;
-    private HBox cajaContrasena;
-    private HBox cajaRepetirContra;
 
     private Label verificacionContra;
     private Label verificacionCuenta;
@@ -59,30 +56,25 @@ public class InterfazRegistro {
     }
 
     private void organizarElementos() {
-        cajaNombre.getChildren().addAll(nombreL, nombreT);
-        cajaApellido.getChildren().addAll(apellidoL, apellidoT);
-        cajaCuenta.getChildren().addAll(nomCuentaL, nomCuentaT, verificacionCuenta);
-        cajaContrasena.getChildren().addAll(contrasenaL, contrasenaT);
-        cajaRepetirContra.getChildren().addAll(repetirContrasenaL, repetirContrasenaT, verificacionContra);
-
-        cajaNombre.setAlignment(Pos.CENTER);
-        cajaApellido.setAlignment(Pos.CENTER);
-        cajaCuenta.setAlignment(Pos.CENTER);
-        cajaContrasena.setAlignment(Pos.CENTER);
-        cajaRepetirContra.setAlignment(Pos.CENTER);
-
-        root.getChildren().addAll(cajaNombre, cajaApellido, cajaCuenta, cajaContrasena, cajaRepetirContra, verificacionGeneral, registrar);
+        labels.getChildren().addAll(nombreL,apellidoL,nomCuentaL,contrasenaL,repetirContrasenaL);
+        textfields.getChildren().addAll(nombreT,apellidoT,nomCuentaT,contrasenaT,repetirContrasenaT);
+        labels.setAlignment(Pos.CENTER_LEFT);
+        textfields.setAlignment(Pos.CENTER_LEFT);
+        labels.setSpacing(16);
+        textfields.setSpacing(15);
+        root.getChildren().addAll(labels,textfields);
         root.setAlignment(Pos.CENTER);
         root.setSpacing(8);
 
     }
 
     private void inicializar() {
-        root = new VBox();
+        root = new HBox();
         verificacionCuenta = new Label();
         verificacionContra = new Label();
         verificacionGeneral = new Label();
-
+        labels= new VBox();
+        textfields= new VBox();
         registrar = new Button("Registrar");
         nombreL = new Label("Nombres: ");
         apellidoL = new Label("Apellidos: ");
@@ -96,11 +88,6 @@ public class InterfazRegistro {
         contrasenaT = new PasswordField();
         repetirContrasenaT = new PasswordField();
 
-        cajaNombre = new HBox();
-        cajaApellido = new HBox();
-        cajaCuenta = new HBox();
-        cajaContrasena = new HBox();
-        cajaRepetirContra = new HBox();
 
     }
 
@@ -142,7 +129,7 @@ public class InterfazRegistro {
         }
     }
 
-    public VBox getRoot() {
+    public HBox getRoot() {
         return root;
     }
 

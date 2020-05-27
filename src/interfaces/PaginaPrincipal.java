@@ -7,11 +7,9 @@ package interfaces;
 
 import encuentrapalabras.EncuentraPalabras;
 import static encuentrapalabras.EncuentraPalabras.screenSize;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import modelo.Usuario;
 
@@ -20,26 +18,30 @@ import modelo.Usuario;
  * @author CLOJA
  */
 public class PaginaPrincipal {
+
     private VBox root;
     private Button jugar;
     private Usuario usuario;
-   private String idioma;
-    public PaginaPrincipal(Usuario usuario,String idioma){
-        this.usuario=usuario;
-        this.idioma=idioma;
-        root= new VBox();
-        jugar=new Button("Jugar");
+    private String idioma;
+
+    public PaginaPrincipal(Usuario usuario, String idioma) {
+        this.usuario = usuario;
+        this.idioma = idioma;
+        root = new VBox();
+        jugar = new Button("Jugar");
         root.getChildren().add(jugar);
         root.setAlignment(Pos.CENTER);
-       
-        jugar.setOnAction((val)->{
-            InterfazJuego i = new InterfazJuego(usuario,idioma);
-            Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
-           
+        root.setId("inicioPane");
+        jugar.setOnAction((val) -> {
+            InterfazJuego i = new InterfazJuego(usuario, idioma);
+            Scene scene = new Scene(i.getRoot(), screenSize.width * 0.55, screenSize.height * 0.7);
+            i.getRoot().setId("paneJuego");
+            scene.getStylesheets().add("file:src/estilos/estiloJuego.css");
             EncuentraPalabras.stage.setScene(scene);
         });
     }
-    public VBox getRoot(){
+
+    public VBox getRoot() {
         return root;
     }
 }

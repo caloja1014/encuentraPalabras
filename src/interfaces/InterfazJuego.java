@@ -28,19 +28,15 @@ import modelo.Usuario;
 import widgets.BotonJuego;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseDragEvent;
-import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import providers.Posicion;
-import javafx.scene.paint.Color;
-import javafx.stage.Window;
 import modelo.LecturaIdioma;
 
 /**
@@ -58,6 +54,11 @@ public class InterfazJuego {
     private ImageView imagenUsu;
     private Label palabra;
     private Label puntajeRecolectado;
+
+    private Label textoPuntaje;
+    private Label textoPalabra;
+    private Label textoPuntajeActual;
+
     private int puntajeActual;
     private StringBuilder palabraEscogida;
     private final Usuario usu;
@@ -97,7 +98,18 @@ public class InterfazJuego {
      * El metodo se encarga de inicializar las variables
      */
     private void inicializar() {
-
+        /* private Label textoPuntaje;
+    private Label textoPalabra;
+    private Label textoPuntajeActual;
+    private Label textoPala;*/
+        textoPuntaje = new Label("Puntaje Requerido");
+        textoPalabra = new Label("Palabra");
+        textoPuntajeActual = new Label("Puntaje Actual");
+        
+        /*textoPuntaje.setFont(new Font(22));
+        textoPuntajeActual.setFont(new Font(22));
+        textoPalabra.setFont(new Font(22));*/
+        
         hilos = new LinkedList<>();
         botones = new BotonJuego[cantidad][cantidad];
         eliminados = new TreeMap<>();
@@ -129,7 +141,13 @@ public class InterfazJuego {
         paneJuego.setMinSize(screenSize.height * 0.3, screenSize.height * 0.3);
 
         crearYAgregarAcciones(particion, cantidad);
-        informacion.getChildren().addAll(nivel, puntajePartida, imagenUsu, palabra, puntajeRecolectado);
+        double espacio= (screenSize.width*0.55 )-(screenSize.height * 0.7);
+        informacion.setPrefSize(espacio, screenSize.height * 0.7);
+        informacion.setMaxSize(espacio, screenSize.height * 0.7);
+        informacion.setMinSize(espacio,screenSize.height * 0.7);
+        informacion.getChildren().addAll(nivel, textoPuntaje, puntajePartida, imagenUsu, textoPalabra, palabra, textoPuntajeActual, puntajeRecolectado);
+        informacion.setAlignment(Pos.CENTER);
+        informacion.setSpacing(15);
         root.getChildren().addAll(paneJuego, informacion);
     }
 
@@ -187,15 +205,18 @@ public class InterfazJuego {
 
                 if (ButtonType.NO.equals(result)) {
                     PaginaPrincipal i = new PaginaPrincipal(usu, idioma);
-                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.55, screenSize.height * 0.7);
+                    scene.getStylesheets().add("file:src/estilos/estiloBotones2.css");
                     EncuentraPalabras.stage.setScene(scene);
                 } else {
                     InterfazJuego i = new InterfazJuego(usu, idioma);
+
                     LecturaIdioma l = new LecturaIdioma(idioma);
                     EncuentraPalabras.idiomaJuego.clear();
                     EncuentraPalabras.idiomaJuego.addAll(l.getIdiomaSet());
-                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
-
+                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.55, screenSize.height * 0.7);
+                    i.getRoot().setId("paneJuego");
+                    scene.getStylesheets().add("file:src/estilos/estiloJuego.css");
                     EncuentraPalabras.stage.setScene(scene);
                 }
             });
@@ -341,15 +362,17 @@ public class InterfazJuego {
 
                 if (ButtonType.NO.equals(result)) {
                     PaginaPrincipal i = new PaginaPrincipal(usu, idioma);
-                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.55, screenSize.height * 0.7);
+                    scene.getStylesheets().add("file:src/estilos/estiloBotones2.css");
                     EncuentraPalabras.stage.setScene(scene);
                 } else {
                     InterfazJuego i = new InterfazJuego(usu, idioma);
                     LecturaIdioma l = new LecturaIdioma(idioma);
                     EncuentraPalabras.idiomaJuego.clear();
                     EncuentraPalabras.idiomaJuego.addAll(l.getIdiomaSet());
-                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
-
+                    Scene scene = new Scene(i.getRoot(), screenSize.width * 0.55, screenSize.height * 0.7);
+                    i.getRoot().setId("paneJuego");
+                    scene.getStylesheets().add("file:src/estilos/estiloJuego.css");
                     EncuentraPalabras.stage.setScene(scene);
                 }
             } else {
@@ -509,7 +532,7 @@ final class BotonesPeligrosos extends Thread {
             BotonJuego b = botones[num1][num2];
             Platform.runLater(() -> {
 
-                b.getBoton().setText("Peligroso");
+                b.cambiarBotonPeligroso();
                 b.setEsPeligroso(true);
 
             });
@@ -521,7 +544,7 @@ final class BotonesPeligrosos extends Thread {
             }
             Platform.runLater(() -> {
 
-                b.getBoton().setText(b.getDato());
+                b.cambiarBotonNormal();
                 b.setEsPeligroso(false);
 
             });

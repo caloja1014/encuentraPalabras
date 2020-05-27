@@ -8,7 +8,12 @@ package widgets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import providers.Posicion;
 
 /**
@@ -26,7 +31,11 @@ public class BotonJuego {
     private final Posicion posicion;
     private final Button boton;
     private boolean esEscogido;
-
+    private StackPane stack;
+    private Text text;
+    private Image playI;
+    private ImageView iv1;
+    private Image botonPeligroso;
     public BotonJuego(double tamanio, double pos_x, double pos_y, String dato, int fila, int columna) {
         this.tamanio = tamanio;
         this.pos_x = pos_x;
@@ -34,22 +43,37 @@ public class BotonJuego {
         this.dato = dato;
         this.esPeligroso = false;
         this.esBonus = false;
-        boton = new Button(dato);
-        boton.setMaxSize(tamanio, tamanio);
-        boton.setPrefSize(tamanio, tamanio);
-        this.posicion= new Posicion(fila,columna);
+        stack = new StackPane();
+        text = new Text(dato);
+        boton = new Button();
+        boton.setMaxSize(tamanio - 2, tamanio - 2);
+        boton.setPrefSize(tamanio - 2, tamanio - 2);
+        this.posicion = new Posicion(fila, columna);
         this.esEscogido = false;
+
+        playI = new Image("file:src/estilos/boton.png");
+        botonPeligroso= new Image("file:src/estilos/boton_peligroso.png");
+        iv1 = new ImageView(playI);
+        
+        iv1.setFitHeight(tamanio-2);
+        iv1.setFitWidth(tamanio-2);
+        stack.getChildren().addAll(iv1, text);
+        stack.setPrefSize(tamanio-2, tamanio-2);
+        stack.setMaxSize(tamanio-2, tamanio-2);
+        stack.setMinSize(tamanio-2, tamanio-2);
+        stack.setAlignment(Pos.CENTER);
+        boton.setGraphic(stack);
     }
 
     public void moverBoton(int noLugares) {
         double posFinal = (noLugares * tamanio) + pos_y;
-        posicion.setFila(posicion.getFila()+noLugares);
+        posicion.setFila(posicion.getFila() + noLugares);
         new Thread(() -> {
             while (pos_y < posFinal) {
                 Platform.runLater(() -> {
                     double posActual = boton.getTranslateY();
-                    double resto= posFinal-pos_y;
-                    double resultado=resto>1?posActual + 1:posActual + resto;
+                    double resto = posFinal - pos_y;
+                    double resultado = resto > 1 ? posActual + 1 : posActual + resto;
                     pos_y = resultado;
                     boton.setTranslateY(pos_y);
                 });
@@ -104,7 +128,8 @@ public class BotonJuego {
     }
 
     public Button getBoton() {
-        boton.setPrefSize(tamanio, tamanio);
+
+        boton.setPrefSize(tamanio-2, tamanio-2);
         boton.setTranslateX(pos_x);
         boton.setTranslateY(pos_y);
         return boton;
@@ -129,14 +154,19 @@ public class BotonJuego {
     public Posicion getPosicion() {
         return posicion;
     }
-    
-   /* @Override
+    public void cambiarBotonPeligroso(){
+        iv1.setImage(botonPeligroso);
+    }
+    public void cambiarBotonNormal(){
+        iv1.setImage(playI);
+    }
+    /* @Override
     public String toString() {
         return "BotonJuego{" + "dato=" + dato + ", fila=" + posicion.getFila() + ", columna=" + posicion.getColumna() + '}';
     }*/
-@Override
+    @Override
     public String toString() {
-        return dato ;
+        return dato;
     }
 
 }

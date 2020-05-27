@@ -8,7 +8,6 @@ package interfaces;
 import encuentrapalabras.EncuentraPalabras;
 import static encuentrapalabras.EncuentraPalabras.screenSize;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -40,9 +39,10 @@ public final class InterfazSesion {
     private VBox credenciales;
     private Sesion sesion;
     private Label validacion;
-    private String idioma;
+    private final String idioma;
+
     public InterfazSesion(String idioma) {
-        this.idioma=idioma;
+        this.idioma = idioma;
         inicializarVariables();
         agregarAcciones();
         organizarElementos();
@@ -54,6 +54,8 @@ public final class InterfazSesion {
         root.autosize();
         root.setAlignment(Pos.CENTER);
         credenciales.getChildren().addAll(usuarioText, contraText, validacion);
+        credenciales.setSpacing(10);
+        validacion.setId("validacionIngreso");
         root.getChildren().addAll(titulo, credenciales, loginBtn, cajaRegistro);
     }
 
@@ -90,15 +92,18 @@ public final class InterfazSesion {
         } else if (u == null) {
             validacion.setText("Usuario o Contraseña incorrectas");
         } else {
-            PaginaPrincipal i = new PaginaPrincipal(u,idioma);
-            Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+            PaginaPrincipal i = new PaginaPrincipal(u, idioma);
+            Scene scene = new Scene(i.getRoot(), screenSize.width * 0.55, screenSize.height * 0.7);
+            scene.getStylesheets().add("file:src/estilos/estiloBotones2.css");
             EncuentraPalabras.stage.setScene(scene);
         }
     }
 
     private void mostrarRegistro() {
-        InterfazRegistro i = new InterfazRegistro(sesion,idioma);
-        Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
+        InterfazRegistro i = new InterfazRegistro(sesion, idioma);
+        Scene scene = new Scene(i.getRoot(), screenSize.width * 0.55, screenSize.height * 0.7);
+        i.getRoot().setId("registroPane");
+        scene.getStylesheets().add("file:src/estilos/estiloBotones2.css");
         EncuentraPalabras.stage.setScene(scene);
     }
 

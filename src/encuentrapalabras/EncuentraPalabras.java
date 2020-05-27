@@ -12,10 +12,8 @@ import java.sql.Connection;
 import java.util.Set;
 import java.util.TreeSet;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import providers.Conexion;
 
 /**
@@ -35,14 +33,16 @@ public class EncuentraPalabras extends Application {
     @Override
     public void start(Stage primaryStage) {
         
-        stage.setMaxHeight(screenSize.height * 0.7);
-        stage.setMaxWidth(screenSize.width * 0.7);
-        stage.setMinHeight(screenSize.height * 0.7);
-        stage.setMinWidth(screenSize.width * 0.7);
+        stage.setMaxHeight(screenSize.height * 0.7+39);
+        stage.setMaxWidth(screenSize.width * 0.55);
+        stage.setMinHeight(screenSize.height * 0.7+39);
+        stage.setMinWidth(screenSize.width * 0.55);
+        
         InterfazIdioma i = new InterfazIdioma();
 
-        Scene scene = new Scene(i.getRoot(), screenSize.width * 0.7, screenSize.height * 0.7);
-
+        Scene scene = new Scene(i.getRoot(), screenSize.width * 0.55, screenSize.height * 0.7);
+        i.getRoot().setId("idiomaPane");
+        scene.getStylesheets().add("file:src/estilos/estiloBotones.css");
         stage.setTitle("Ecuentra Palabras");
         stage.setScene(scene);
         stage.show();

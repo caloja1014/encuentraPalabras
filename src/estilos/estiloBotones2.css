@@ -1,0 +1,46 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 26, 2020, 3:36:57 PM
+    Author     : CLOJA
+*/
+
+.button { 
+    -fx-font-size: 22px; 
+    -fx-background-color: #000000;
+    -fx-text-fill: white;
+    -fx-font-family: "Arial";
+    -fx-padding: 10 20 10 20;
+    -fx-border-radius: 0;
+}
+.button:hover {
+    -fx-background-color: #666666
+
+}
+.label{
+    -fx-text-fill: black;
+    -fx-font-size:22px; 
+
+}
+
+.text-field{
+    -fx-font-size:16px; 
+
+}
+#registroPane{
+    -fx-background-image: url("fondo2.jpg");
+    -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0);
+}
+#inicioPane{
+    -fx-background-image: url("fondo2.jpg");
+    -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0);
+
+}
+#validacionIngreso{
+    -fx-text-fill: red;
+    -fx-font-size:12px; 
+    
+}
