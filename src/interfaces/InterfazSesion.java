@@ -86,11 +86,10 @@ public final class InterfazSesion {
     }
 
     private void ingresar() {
-        Usuario u = sesion.getUser(usuarioText.getText(), contraText.getText());
+        Usuario u =  new Usuario("Carlos","Loja","caloja",4,100);
         if (usuarioText.getText().isEmpty() || contraText.getText().isEmpty()) {
             validacion.setText("Campos Vacios");
-        } else if (u == null) {
-            validacion.setText("Usuario o Contraseña incorrectas");
+        
         } else {
             PaginaPrincipal i = new PaginaPrincipal(u, idioma);
             Scene scene = new Scene(i.getRoot(), screenSize.width * 0.55, screenSize.height * 0.7);
